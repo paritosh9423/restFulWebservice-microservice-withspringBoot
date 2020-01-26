@@ -4,6 +4,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,9 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.paritosh.rest.webservices.restfulwebservices.CustomExceptions.UserNotFoundException;
 import com.paritosh.rest.webservices.restfulwebservices.UserDao.UserDAOService;
+import com.paritosh.rest.webservices.restfulwebservices.bean.Post;
 import com.paritosh.rest.webservices.restfulwebservices.bean.Users;
+import com.paritosh.rest.webservices.restfulwebservices.repository.PostRepository;
 import com.paritosh.rest.webservices.restfulwebservices.repository.UserRepository;
 
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +38,8 @@ public class UserJPAController {
 	private UserDAOService userService;
 	@Autowired
 	private UserRepository userRepo;
+	@Autowired
+	private PostRepository postRepo;
 
 	@GetMapping(path = "/jpa/users")
 	public List<Users> retrieveAllUsers() {
@@ -86,4 +91,43 @@ public class UserJPAController {
 		
 		userRepo.deleteById(id);
 	}
+	
+
+	
+	@GetMapping(path = "/jpa/users/{id}/post")//
+	@ApiOperation(value="get all posts with user id")
+	public List<Post> getPostbyUserid(@PathVariable int id) {
+		//Users userFound = userService.find(id);
+		Optional<Users> userFound = userRepo.findById(id);
+		if(!userFound.isPresent()) {
+			throw new UserNotFoundException("id-"+id);
+			}
+		//HATEOAS
+		return userFound.get().getPosts();
+
+	}
+	
+	
+	@PostMapping("/jpa/users/{id}/post")
+	public ResponseEntity<Object> createPost(@PathVariable int id , @RequestBody Post post) {
+	
+		//Users userSaved = userService.save(user);
+		
+		
+		Optional<Users> userSaved = userRepo.findById(id);
+		if(!userSaved.isPresent()) {
+			throw new UserNotFoundException("id-"+id);
+		}
+		post.setUser(userSaved.get());
+		postRepo.save(post);
+		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().
+		path("/{id}").
+		buildAndExpand(userSaved.get().getUserId()).
+		toUri();
+		
+		return ResponseEntity.created(uri).build();
+		
+
+	}
+	
 }
