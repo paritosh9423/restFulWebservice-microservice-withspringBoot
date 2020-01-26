@@ -2,12 +2,23 @@ package com.paritosh.rest.webservices.restfulwebservices.bean;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Size;
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+@ApiModel(description="Users details")
 public class Users {
 
 	private Integer userId ;
+	@Size(min=2 , message = "User Name can not be less than 2 chars")
+	@NotNull
+	@ApiModelProperty(notes="Name must be greate than 2 characters")
 	private String userName;
+	@Past
+	@ApiModelProperty(notes="Birthday must be less than current date")
 	private Date birthDate;
-	
 	
 	
 	public Users() {

@@ -42,4 +42,15 @@ public class UserDAOService {
 		return null;
 	}
 	
+	
+	public boolean deletebyId(int id){
+		if(id==0)
+			return false;
+		for(Users user : usersList){
+			if(user.getUserId() == id){
+				return usersList.remove(user);
+				}
+		}
+		return  false;
+	}
 }
