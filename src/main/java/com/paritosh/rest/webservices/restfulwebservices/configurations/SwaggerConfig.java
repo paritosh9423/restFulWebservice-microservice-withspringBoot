@@ -3,7 +3,7 @@ package com.paritosh.rest.webservices.restfulwebservices.configurations;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.assertj.core.util.Arrays;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
